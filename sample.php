@@ -20,4 +20,4 @@ $muk->process(2);
 var_dump($muk->getResult());
 */
 
-echo "This operation took: " . $muk->getExecutionTime() . " seconds.";
+echo "This operation took: " . $muk->getExecutionTime() . " seconds." . PHP_EOL;
