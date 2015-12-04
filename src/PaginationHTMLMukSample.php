@@ -8,10 +8,6 @@ use Lorenum\Muk\Parsers\HTMLParser;
 class PaginationHTMLMukSample extends Muk{
     protected $page = 1;
 
-    public function incrementPage(){
-        $this->page++;
-    }
-
     public function beforeRequest(Request $request) {
         //Before the request is made we need to define our connection settings
         $request->setUrl("http://www.amazon.com/s/?page=" . $this->page . "&keywords=laptop");
@@ -21,14 +17,17 @@ class PaginationHTMLMukSample extends Muk{
     }
 
     public function afterRequest(Request $request) {
+        //The HTMLParser sets up the XPath document that we are going to use to extract the result
         $parser = new HTMLParser($request->getResponse()->getBody());
         $result = $parser->query("//*[@class='a-size-medium a-color-null s-inline s-access-title a-text-normal']");
 
+        //Add each product to the result set
         foreach($result as $product){
             $this->result[] = $product->nodeValue;
         }
 
-        $this->incrementPage();
+        //Increment the page counter in order to construct the correct URL for the next round-trip
+        $this->page++;
     }
 
 }

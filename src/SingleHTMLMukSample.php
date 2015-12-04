@@ -16,12 +16,13 @@ class SingleHTMLMukSample extends Muk{
     }
 
     public function afterRequest(Request $request) {
+        //The HTMLParser sets up the XPath document that we are going to use to extract the result
         $parser = new HTMLParser($request->getResponse()->getBody());
         $result = $parser->query("//*[@class='ent-name']");
 
+        //Add each product to the result set
         foreach($result as $pokemon){
             $this->result[] = $pokemon->nodeValue;
         }
     }
-
 }
