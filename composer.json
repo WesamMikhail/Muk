@@ -1,0 +1,21 @@
+{
+  "name" : "lorenum/muk",
+  "description" : "PHP Web scraper",
+  "license" : "MIT",
+  "authors" : [
+    {
+      "name" : "Wesam Mikhail",
+      "email" : "wesam@lorenum.com",
+      "homepage" : "http://lorenum.com/wesam"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Lorenum\\Muk\\": "src/"
+    }
+  },
+  "require": {
+    "ext-curl": "*",
+    "php": ">=5.3"
+  }
+}
