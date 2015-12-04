@@ -1,11 +1,16 @@
 <?php
 namespace Lorenum\Muk\Core;
 
+use Lorenum\Muk\Exceptions\InvalidRequestMethod;
+
 class Request{
+    const METHOD_GET = "GET";
+    const METHOD_POST = "POST";
+
     protected $method = "GET";
     protected $url;
     protected $data;
-    protected $headers;
+    protected $headers = [];
     protected $response;
 
     /**
@@ -30,9 +35,15 @@ class Request{
     }
 
     /**
-     * @param mixed $method
+     * Set request HTTP method
+     *
+     * @param $method
+     * @throws InvalidRequestMethod
      */
     public function setMethod($method) {
+        if($method !== Request::METHOD_GET && $method !== Request::METHOD_POST)
+            throw new InvalidRequestMethod;
+
         $this->method = $method;
     }
 
@@ -74,7 +85,7 @@ class Request{
     /**
      * @param mixed $headers
      */
-    public function setHeaders($headers) {
+    public function setHeaders(array $headers) {
         $this->headers = $headers;
     }
 

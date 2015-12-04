@@ -2,6 +2,7 @@
 namespace Lorenum\Muk\Core;
 
 use Lorenum\Muk\Exceptions\InvalidRequestUrl;
+use GuzzleHttp\Client;
 
 abstract class Muk {
     /**
@@ -61,6 +62,7 @@ abstract class Muk {
      */
     public final function process($loop = 1, $sleep = 0){
         $start = microtime(true);
+
         for($i = 0; $i < $loop; $i++) {
             $request = new Request();
             $this->beforeRequest($request);
@@ -69,7 +71,7 @@ abstract class Muk {
             usleep($sleep * 1000);
         }
 
-        $this->time = (time() - $start) / 60;
+        $this->time = (microtime(true) - $start) / 60;
     }
 
     /**
@@ -82,49 +84,15 @@ abstract class Muk {
         if(is_null($request->getUrl()) || $request->getUrl() == '')
             throw new InvalidRequestUrl;
 
-        //TODO substitute this curl approach with a requestManager object
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_URL,$request->getUrl());
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-
-        if($request->getMethod() == "POST"){
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request->getData()));
-        }
-
-        //todo complete headers support
-        if(!is_null($request->getHeaders())){
-            foreach($request->getHeaders() as $key => $val){
-                if($key == "User-Agent")
-                    curl_setopt($ch, CURLOPT_USERAGENT, $val);
-            }
-        }
-
-        $result = curl_exec($ch);
-
-        //Parse headers and body
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        list($headerString, $bodyString) = explode("\r\n\r\n", $result, 2);
-
-        //Convert header-string into an array
-        $headers = [];
-        foreach (explode("\r\n", $headerString) as $i => $line) {
-            if ($i === 0)
-                $headers['http_code'] = $line;
-            else {
-                list ($key, $value) = explode(': ', $line);
-                $headers[$key] = $value;
-            }
-        }
-
-        curl_close($ch);
+        //Using Guzzle instead of the old curl
+        $client = new Client();
+        $result = $client->request($request->getMethod(), $request->getUrl(), ['headers' => $request->getHeaders()]);
 
         //Generate the request object and inject it into the request
         $response = new Response();
-        $response->setStatus($status);
-        $response->setBody($bodyString);
-        $response->setHeaders($headers);
+        $response->setStatus($result->getStatusCode());
+        $response->setBody($result->getBody());
+        $response->setHeaders($result->getHeaders());
 
         $request->setResponse($response);
     }
