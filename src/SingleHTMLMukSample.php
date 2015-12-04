@@ -22,14 +22,16 @@ class SingleHTMLMukSample extends Muk{
         $parser = new HTMLParser($request->getResponse()->getBody());
         $result = $parser->query("//*[@class='ent-name']");
 
-        var_dump($result);
+        $pokemons = [];
         foreach($result as $pokemon){
-            var_dump($pokemon->nodeValue);
+            $pokemon[] = $pokemon->nodeValue;
 
             //Instead of outputting the result you can use the DB connection to insert into DB
             //Note: always use prepared statements because you cannot trust the incoming data to be safe!
             //$this->db->prepare("INSERT INTO ...");
         }
+
+        $this->setResult($pokemons);
     }
 
 }

@@ -4,13 +4,23 @@ namespace Lorenum\Muk\Core;
 use Lorenum\Muk\Exceptions\InvalidRequestUrl;
 
 abstract class Muk {
+    /**
+     * @var mixed container variable for the generated result
+     */
     protected $result;
 
-    abstract public function beforeRequest(Request $request);
-    abstract public function afterRequest(Request $request);
-
-    public function getResult(){
+    /**
+     * @return mixed
+     */
+    public function getResult() {
         return $this->result;
+    }
+
+    /**
+     * @param mixed $result
+     */
+    public function setResult($result) {
+        $this->result = $result;
     }
 
     /**
@@ -45,6 +55,12 @@ abstract class Muk {
         }
     }
 
+    /**
+     * The function in which the actual remote cal is made
+     *
+     * @param Request $request
+     * @throws InvalidRequestUrl
+     */
     public final function doRequest(Request $request){
         if(is_null($request->getUrl()) || $request->getUrl() == '')
             throw new InvalidRequestUrl;
@@ -96,4 +112,20 @@ abstract class Muk {
 
         $request->setResponse($response);
     }
+
+    /**
+     * This function runs BEFORE the actual request.
+     * All boilerplate and preparation code must be included here
+     *
+     * @param Request $request
+     */
+    abstract public function beforeRequest(Request $request);
+
+    /**
+     * This function runs AFTER the actual request.
+     * All parsing and result handling is made here
+     *
+     * @param Request $request
+     */
+    abstract public function afterRequest(Request $request);
 }
