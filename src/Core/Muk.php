@@ -16,11 +16,27 @@ abstract class Muk {
     protected $time;
 
     /**
+     * @var int sleep time between requests in milliseconds
+     */
+    protected $sleep = 1000;
+
+
+
+    /**
+     * Sleep time in milliseconds between requests
+     *
+     * @param int $sleep
+     */
+    public function setTimeBetweenRequests($sleep) {
+        $this->sleep = $sleep;
+    }
+
+    /**
      * Get total operation time
      *
      * @return float
      */
-    public function getTime(){
+    public function getExecutionTime(){
         return $this->time;
     }
 
@@ -47,6 +63,8 @@ abstract class Muk {
         set_time_limit($seconds);
     }
 
+
+
     /**
      * Runs the actual request cycle as described below:
      *
@@ -57,10 +75,9 @@ abstract class Muk {
      * The sleep factor is introduced to allow for a wait period between requests in order not to DDoS the server!
      *
      * @param int  number of times this process should be executed
-     * @param int $sleep number of milliseconds to wait between requests
      * @throws InvalidRequestUrl
      */
-    public final function process($loop = 1, $sleep = 0){
+    public final function process($loop = 1){
         $start = microtime(true);
 
         for($i = 0; $i < $loop; $i++) {
@@ -68,7 +85,7 @@ abstract class Muk {
             $this->beforeRequest($request);
             $this->doRequest($request);
             $this->afterRequest($request);
-            usleep($sleep * 1000);
+            usleep($this->sleep * 1000);
         }
 
         $this->time = (microtime(true) - $start) / 60;
@@ -96,6 +113,8 @@ abstract class Muk {
 
         $request->setResponse($response);
     }
+
+
 
     /**
      * This function runs BEFORE the actual request.
