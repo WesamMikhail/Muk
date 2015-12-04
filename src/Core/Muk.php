@@ -10,6 +10,20 @@ abstract class Muk {
     protected $result;
 
     /**
+     * @var float Time it took to execute the full operation
+     */
+    protected $time;
+
+    /**
+     * Get total operation time
+     *
+     * @return float
+     */
+    public function getTime(){
+        return $this->time;
+    }
+
+    /**
      * @return mixed
      */
     public function getResult() {
@@ -46,6 +60,7 @@ abstract class Muk {
      * @throws InvalidRequestUrl
      */
     public final function process($loop = 1, $sleep = 0){
+        $start = microtime(true);
         for($i = 0; $i < $loop; $i++) {
             $request = new Request();
             $this->beforeRequest($request);
@@ -53,6 +68,8 @@ abstract class Muk {
             $this->afterRequest($request);
             usleep($sleep * 1000);
         }
+
+        $this->time = (time() - $start) / 60;
     }
 
     /**
