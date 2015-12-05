@@ -150,6 +150,8 @@ abstract class BaseMuk {
         $this->beforeRequest($request);
         $this->doRequest($request);
         $this->afterRequest($request);
+        usleep($this->sleep * 1000); // x1000 because usleep() takes microseconds and our execution time is given in milliseconds
+
 
         $this->setExecutionTime((microtime(true) - $start) / 60);
 
