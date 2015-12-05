@@ -1,5 +1,5 @@
 <?php
-namespace Lorenum\Muk\Core;
+namespace Lorenum\Muk\Request;
 
 class Response{
     protected $status;

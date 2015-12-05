@@ -1,17 +1,17 @@
 <?php
 namespace Lorenum\Muk;
 
-use Lorenum\Muk\Core\Muk;
-use Lorenum\Muk\Core\Request;
+use Lorenum\Muk\Core\SingleMuk;
+use Lorenum\Muk\Request\Request;
 use Lorenum\Muk\Parsers\HTMLParser;
 
-class SingleHTMLMukSample extends Muk{
+class SingleHTMLMukSample extends SingleMuk{
 
     public function beforeRequest(Request $request) {
         //Before the request is made we need to define our connection settings
         $request->setUrl("http://pokemondb.net/pokedex/game/firered-leafgreen");
         $request->setHeaders([
-            "User-Agent" => "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12"
+            "User-Agent" => "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
         ]);
     }
 

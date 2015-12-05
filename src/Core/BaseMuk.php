@@ -1,10 +1,12 @@
 <?php
 namespace Lorenum\Muk\Core;
 
-use Lorenum\Muk\Exceptions\InvalidRequestUrl;
 use GuzzleHttp\Client;
+use Lorenum\Muk\Request\Request;
+use Lorenum\Muk\Request\Response;
+use Lorenum\Muk\Exceptions\InvalidRequestUrl;
 
-abstract class Muk {
+abstract class BaseMuk {
     /**
      * @var mixed container variable for the generated result
      */
@@ -13,7 +15,7 @@ abstract class Muk {
     /**
      * @var float Time it took to execute the full operation
      */
-    protected $time;
+    protected $time = 0;
 
     /**
      * @var int sleep time between requests in milliseconds
@@ -32,12 +34,21 @@ abstract class Muk {
     }
 
     /**
-     * Get total operation time
+     * Get total operation time in minutes
      *
      * @return float
      */
     public function getExecutionTime(){
         return $this->time;
+    }
+
+    /**
+     * Add execution time to the total script run time.
+     *
+     * @param float $time time to add in minutes
+     */
+    protected function addExecutionTime($time){
+        $this->time = $this->time + $time;
     }
 
     /**
@@ -63,47 +74,25 @@ abstract class Muk {
         set_time_limit($seconds);
     }
 
-
-
-    /**
-     * Runs the actual request cycle as described below:
-     *
-     *  Muk->beforeRequest()
-     *  Muk->doRequest()
-     *  Muk->afterRequest()
-     *
-     * The sleep factor is introduced to allow for a wait period between requests in order not to DDoS the server!
-     *
-     * @param int  number of times this process should be executed
-     * @throws InvalidRequestUrl
-     */
-    public final function process($loop = 1){
-        $start = microtime(true);
-
-        for($i = 0; $i < $loop; $i++) {
-            $request = new Request();
-            $this->beforeRequest($request);
-            $this->doRequest($request);
-            $this->afterRequest($request);
-            usleep($this->sleep * 1000);
-        }
-
-        $this->time = (microtime(true) - $start) / 60;
-    }
-
     /**
      * The function in which the actual remote cal is made
      *
      * @param Request $request
      * @throws InvalidRequestUrl
      */
-    public final function doRequest(Request $request){
+    public function doRequest(Request $request){
         if(is_null($request->getUrl()) || $request->getUrl() == '')
             throw new InvalidRequestUrl;
 
+
         //Using Guzzle instead of the old curl
+        //We also use the cacert.pem to verify all SSL connections
         $client = new Client();
-        $result = $client->request($request->getMethod(), $request->getUrl(), ['headers' => $request->getHeaders()]);
+        $result = $client->request($request->getMethod(), $request->getUrl(), [
+            'headers' => $request->getHeaders(),
+            'verify' => __DIR__ . '/cacert.pem'
+        ]);
+
 
         //Generate the request object and inject it into the request
         $response = new Response();
@@ -131,4 +120,12 @@ abstract class Muk {
      * @param Request $request
      */
     abstract public function afterRequest(Request $request);
+
+    /**
+     * This function dictates the processing order of the script.
+     * Ideally, any implementing class should implement something that resembles SingleMuk::process()
+     *
+     * @param $options
+     */
+    abstract public function process($options);
 }

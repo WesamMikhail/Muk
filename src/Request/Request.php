@@ -1,5 +1,5 @@
 <?php
-namespace Lorenum\Muk\Core;
+namespace Lorenum\Muk\Request;
 
 use Lorenum\Muk\Exceptions\InvalidRequestMethod;
 
