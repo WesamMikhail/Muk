@@ -144,19 +144,23 @@ abstract class BaseMuk {
      * @throws InvalidRequestUrl
      */
     public function run($minutes){
+        $totalRunTime = 0;
         $start = microtime(true);
 
-        $request = new Request();
-        $this->beforeRequest($request);
-        $this->doRequest($request);
-        $this->afterRequest($request);
-        usleep($this->sleep * 1000); // x1000 because usleep() takes microseconds and our execution time is given in milliseconds
+        while(true){
+            $request = new Request();
+            $this->beforeRequest($request);
+            $this->doRequest($request);
+            $this->afterRequest($request);
+            usleep($this->sleep * 1000); // x1000 because usleep() takes microseconds and our execution time is given in milliseconds
 
+            $totalRunTime = (microtime(true) - $start) / 60;
 
-        $this->setExecutionTime((microtime(true) - $start) / 60);
+            if($totalRunTime >= $minutes)
+                break;
+        }
 
-        if($this->getExecutionTime() < $minutes)
-            $this->run($minutes);
+        $this->setExecutionTime($totalRunTime);
     }
 
 
