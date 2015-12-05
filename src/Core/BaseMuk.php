@@ -43,12 +43,10 @@ abstract class BaseMuk {
     }
 
     /**
-     * Add execution time to the total script run time.
-     *
-     * @param float $time time to add in minutes
+     * @param float $time
      */
-    protected function addExecutionTime($time){
-        $this->time = $this->time + $time;
+    protected function setExecutionTime($time){
+        $this->time = $time;
     }
 
     /**
@@ -103,6 +101,63 @@ abstract class BaseMuk {
         $request->setResponse($response);
     }
 
+    /**
+     * Process the Muk ONCE. This is equivalent to sending ONE request and parsing the result ONCE
+     *
+     * @throws InvalidRequestUrl
+     */
+    public function process(){
+        $start = microtime(true);
+
+        $request = new Request();
+        $this->beforeRequest($request);
+        $this->doRequest($request);
+        $this->afterRequest($request);
+
+        $this->setExecutionTime((microtime(true) - $start) / 60);
+    }
+
+    /**
+     * Process the Muk X times. This is equivalent to sending X requests and parsing each one of the responses
+     *
+     * @param int $times How many times you want this muk to be ran
+     * @throws InvalidRequestUrl
+     */
+    public function iterate($times){
+        $start = microtime(true);
+
+        for($i = 0; $i < $times; $i++) {
+            $request = new Request();
+            $this->beforeRequest($request);
+            $this->doRequest($request);
+            $this->afterRequest($request);
+            usleep($this->sleep * 1000); // x1000 because usleep() takes microseconds and our execution time is given in milliseconds
+        }
+
+        $this->setExecutionTime((microtime(true) - $start) / 60);
+    }
+
+    /**
+     * Process the Muk for X minutes. This is equivalent to re-running the Muk until a time requirement is satisfied
+     *
+     * @param float $minutes Number of minutes you want this muk to run
+     * @throws InvalidRequestUrl
+     */
+    public function run($minutes){
+        $start = microtime(true);
+
+        $request = new Request();
+        $this->beforeRequest($request);
+        $this->doRequest($request);
+        $this->afterRequest($request);
+
+        $this->setExecutionTime((microtime(true) - $start) / 60);
+
+        if($this->getExecutionTime() < $minutes)
+            $this->run($minutes);
+    }
+
+
 
 
     /**
@@ -120,12 +175,4 @@ abstract class BaseMuk {
      * @param Request $request
      */
     abstract public function afterRequest(Request $request);
-
-    /**
-     * This function dictates the processing order of the script.
-     * Ideally, any implementing class should implement something that resembles SingleMuk::process()
-     *
-     * @param $options
-     */
-    abstract public function process($options);
 }

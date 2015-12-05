@@ -1,11 +1,11 @@
 <?php
 namespace Lorenum\Muk\Examples;
 
-use Lorenum\Muk\Core\LoopMuk;
+use Lorenum\Muk\Core\BaseMuk;
 use Lorenum\Muk\Request\Request;
 use Lorenum\Muk\Parsers\HTMLParser;
 
-class PaginationHTMLMuk extends LoopMuk{
+class PaginationHTMLMuk extends BaseMuk{
     protected $page = 1;
 
     public function beforeRequest(Request $request) {

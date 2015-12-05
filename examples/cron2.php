@@ -7,7 +7,7 @@ if(is_readable('../vendor/autoload.php'))
 $muk = new \Lorenum\Muk\Examples\PaginationHTMLMuk();
 $muk->setMaxScriptExecutionTime(0); //Unlimited execution time
 $muk->setTimeBetweenRequests(2000);
-$muk->process(2);
+$muk->iterate(2);
 $result = $muk->getResult();
 
 //You can now store or output the result in the DB if you haven't already stored them using the afterRequest() method in your Muk

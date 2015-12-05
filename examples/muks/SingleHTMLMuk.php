@@ -1,11 +1,11 @@
 <?php
 namespace Lorenum\Muk\Examples;
 
-use Lorenum\Muk\Core\SingleMuk;
+use Lorenum\Muk\Core\BaseMuk;
 use Lorenum\Muk\Request\Request;
 use Lorenum\Muk\Parsers\HTMLParser;
 
-class SingleHTMLMuk extends SingleMuk{
+class SingleHTMLMuk extends BaseMuk{
 
     public function beforeRequest(Request $request) {
         //Before the request is made we need to define our connection settings
