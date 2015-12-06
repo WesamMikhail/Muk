@@ -8,10 +8,36 @@ class Request{
     const METHOD_POST = "POST";
 
     protected $method = "GET";
+    protected $proxies = [];
     protected $url;
     protected $data;
     protected $headers = [];
     protected $response;
+
+
+    /**
+     * Add an HTTP proxy as follows
+     * @param string $proxy Example: http://username:password@55.44.33.22:10
+     */
+    public function addHTTPProxy($proxy){
+        $this->proxies["http"] = $proxy;
+    }
+
+    /**
+     * Add an HTTPS proxy as follows
+     * @param string $proxy Example: http://username:password@55.44.33.22:10
+     */
+    public function addHTTPSProxy($proxy){
+        $this->proxies["https"] = $proxy;
+    }
+
+    /**
+     * Get all defined proxies
+     * @return array
+     */
+    public function getProxies(){
+        return $this->proxies;
+    }
 
     /**
      * @return Response

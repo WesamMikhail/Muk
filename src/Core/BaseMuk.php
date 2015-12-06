@@ -88,7 +88,8 @@ abstract class BaseMuk {
         $client = new Client();
         $result = $client->request($request->getMethod(), $request->getUrl(), [
             'headers' => $request->getHeaders(),
-            'verify' => __DIR__ . '/cacert.pem'
+            'verify' => __DIR__ . '/cacert.pem',
+            'proxy' => $request->getProxies()
         ]);
 
 
