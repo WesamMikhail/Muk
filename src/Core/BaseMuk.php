@@ -23,6 +23,24 @@ abstract class BaseMuk {
     protected $sleep = 1000;
 
 
+    /**
+     * @var int Number of times the process ran since creation
+     */
+    protected $executions = 0;
+
+    /**
+     * @return int Number of times the process has been executed since creation
+     */
+    public function getNumberOfExecutions() {
+        return $this->executions;
+    }
+
+    /**
+     * Increments the number of times this script has been executed
+     */
+    protected function incrementNumberOfExecutions(){
+        $this->executions++;
+    }
 
     /**
      * Sleep time in milliseconds between requests
@@ -116,6 +134,7 @@ abstract class BaseMuk {
         $this->afterRequest($request);
 
         $this->setExecutionTime((microtime(true) - $start) / 60);
+        $this->incrementNumberOfExecutions();
     }
 
     /**
@@ -133,6 +152,7 @@ abstract class BaseMuk {
             $this->doRequest($request);
             $this->afterRequest($request);
             usleep($this->sleep * 1000); // x1000 because usleep() takes microseconds and our execution time is given in milliseconds
+            $this->incrementNumberOfExecutions();
         }
 
         $this->setExecutionTime((microtime(true) - $start) / 60);
@@ -154,6 +174,7 @@ abstract class BaseMuk {
             $this->doRequest($request);
             $this->afterRequest($request);
             usleep($this->sleep * 1000); // x1000 because usleep() takes microseconds and our execution time is given in milliseconds
+            $this->incrementNumberOfExecutions();
 
             $totalRunTime = (microtime(true) - $start) / 60;
 
